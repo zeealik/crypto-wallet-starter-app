@@ -2,19 +2,39 @@ import React from "react";
 import {
     TouchableOpacity,
 } from "react-native";
+import { connect } from "react-redux";
+import { setTradeModalVisibility } from "../stores/tab/tabActions";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import {TabIcon} from "../components"
+import { TabIcon } from "../components"
 import { Home, Portfolio, Market, Profile } from "../screens"
 import { COLORS, icons } from "../constants"
 
 const Tab = createBottomTabNavigator()
 
-const Tabs = () => {
+const TabBarCustomButton = ({ children, onPress }) => {
+    return (
+        <TouchableOpacity
+            style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: 'center'
+            }}
+            onPress={onPress}
+        >
+            {children}
+        </TouchableOpacity>
 
+    )
+}
+
+const Tabs = ({ setTradeModalVisibility, isTradeModalVisible }) => {
+    function tradeTabButtonOnPressHandler() {
+        setTradeModalVisibility(!isTradeModalVisible)
+    }
     return (
         <Tab.Navigator
             tabBarOptions={{
-                showLabel:false,
+                showLabel: false,
                 style: {
                     height: 140,
                     backgroundColor: COLORS.primary,
@@ -26,14 +46,23 @@ const Tabs = () => {
                 name="Home"
                 component={Home}
                 options={{
-                    tabBarIcon: ({focused}) => {
-                        return (
-                            <TabIcon
-                                focused={focused}
-                                icon={icons.home}
-                                label="Home"
-                            />
-                        )
+                    tabBarIcon: ({ focused }) => {
+                        if (!isTradeModalVisible) {
+                            return (
+                                <TabIcon
+                                    focused={focused}
+                                    icon={icons.home}
+                                    label="Home"
+                                />
+                            )
+                        }
+                    }
+                }}
+                listeners={{
+                    tabPress: e => {
+                        if (isTradeModalVisible) {
+                            e.preventDefault()
+                        }
                     }
                 }}
             />
@@ -41,14 +70,24 @@ const Tabs = () => {
                 name="Portfolio"
                 component={Portfolio}
                 options={{
-                    tabBarIcon: ({focused}) => {
-                        return (
-                            <TabIcon
-                                focused={focused}
-                                icon={icons.briefcase}
-                                label="Portfolio"
-                            />
-                        )
+                    tabBarIcon: ({ focused }) => {
+                        if (!isTradeModalVisible) {
+                            return (
+                                <TabIcon
+                                    focused={focused}
+                                    icon={icons.briefcase}
+                                    label="Portfolio"
+                                />
+                            )
+                        }
+
+                    }
+                }}
+                listeners={{
+                    tabPress: e => {
+                        if (isTradeModalVisible) {
+                            e.preventDefault()
+                        }
                     }
                 }}
             />
@@ -56,30 +95,50 @@ const Tabs = () => {
                 name="Trade"
                 component={Home}
                 options={{
-                    tabBarIcon: ({focused}) => {
+                    tabBarIcon: ({ focused }) => {
                         return (
                             <TabIcon
                                 focused={focused}
-                                icon={icons.trade}
+                                icon={isTradeModalVisible ? icons.close : icons.trade}
+                                iconStyle={
+                                    isTradeModalVisible ? {
+                                        width: 15,
+                                        height: 15
+                                    } : null}
                                 label="Trade"
                                 isTrade={true}
                             />
                         )
-                    }
+                    },
+                    tabBarButton: (props) => (
+                        <TabBarCustomButton
+                            {...props}
+                            onPress={() => tradeTabButtonOnPressHandler()}
+                        />
+                    )
                 }}
             />
             <Tab.Screen
                 name="Market"
                 component={Market}
                 options={{
-                    tabBarIcon: ({focused}) => {
-                        return (
-                            <TabIcon
-                                focused={focused}
-                                icon={icons.market}
-                                label="Market"
-                            />
-                        )
+                    tabBarIcon: ({ focused }) => {
+                        if (!isTradeModalVisible) {
+                            return (
+                                <TabIcon
+                                    focused={focused}
+                                    icon={icons.market}
+                                    label="Market"
+                                />
+                            )
+                        }
+                    }
+                }}
+                listeners={{
+                    tabPress: e => {
+                        if (isTradeModalVisible) {
+                            e.preventDefault()
+                        }
                     }
                 }}
             />
@@ -87,14 +146,23 @@ const Tabs = () => {
                 name="Profile"
                 component={Profile}
                 options={{
-                    tabBarIcon: ({focused}) => {
-                        return (
-                            <TabIcon
-                                focused={focused}
-                                icon={icons.profile}
-                                label="Profile"
-                            />
-                        )
+                    tabBarIcon: ({ focused }) => {
+                        if (!isTradeModalVisible) {
+                            return (
+                                <TabIcon
+                                    focused={focused}
+                                    icon={icons.profile}
+                                    label="Profile"
+                                />
+                            )
+                        }
+                    }
+                }}
+                listeners={{
+                    tabPress: e => {
+                        if (isTradeModalVisible) {
+                            e.preventDefault()
+                        }
                     }
                 }}
             />
@@ -102,4 +170,20 @@ const Tabs = () => {
     )
 }
 
-export default Tabs;
+
+function mapStateToProps(state) {
+    return {
+        isTradeModalVisible: state.tabReducer.isTradeModalVisible
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        setTradeModalVisibility: (isVisible) => {
+            return dispatch(setTradeModalVisibility(isVisible))
+        }
+
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Tabs)

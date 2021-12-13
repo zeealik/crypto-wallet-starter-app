@@ -1,6 +1,8 @@
 
 import TabIcon from './TabIcon';
+import IconTextButton from './IconTextButton';
 
 export {
-   TabIcon
+   TabIcon, 
+   IconTextButton
 }

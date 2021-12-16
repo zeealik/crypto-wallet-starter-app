@@ -34,13 +34,10 @@ const MainLayout = ({ children, isTradeModalVisible }) => {
    return (
       <View style={{ flex: 1 }}>
          {children}
-
-
          {/* Dim Background */}
          {
             isTradeModalVisible &&
             <Animated.View
-
                style={{
                   position: 'absolute',
                   top: 0,
@@ -53,9 +50,6 @@ const MainLayout = ({ children, isTradeModalVisible }) => {
                opacity={modalAnimatedValue}
             />
          }
-
-
-
          {/* Modal */}
          <Animated.View
             style={{
